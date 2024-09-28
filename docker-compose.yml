@@ -1,0 +1,6 @@
+﻿services:
+  asynclocaldemo:
+    image: asynclocaldemo
+    build:
+      context: .
+      dockerfile: AsyncLocalDemo/Dockerfile
