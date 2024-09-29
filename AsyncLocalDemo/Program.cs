@@ -48,9 +48,9 @@ var summaries = new[]
     "Scorching"
 };
 
-app.MapGet("/weatherforecast", ([FromServices] ILogger logger) =>
+app.MapGet("/weatherforecast", async ([FromServices] ILogger logger, [FromServices] IHttpClientFactory clientFactory) =>
     {
-        logger.Debug("Getting weather forecast");
+        logger.Information("Getting weather forecast");
         LogContext.PushProperty("LuckyNumber", 69);
         var forecast = Enumerable.Range(1, 5).Select(index =>
                 new WeatherForecast
@@ -60,6 +60,8 @@ app.MapGet("/weatherforecast", ([FromServices] ILogger logger) =>
                     summaries[Random.Shared.Next(summaries.Length)]
                 ))
             .ToArray();
+        var client = clientFactory.CreateClient(" :-( ");
+        await client.GetAsync("https://example.com");
         logger.Information("Got weather forecast");
         return forecast;
     })
@@ -78,6 +80,13 @@ app.MapGet("/DemoThreadLocalAsync", async ([FromServices] ILogger logger, [FromS
         await service.DemoThreadLocalAsync();
     })
     .WithName("DemoThreadLocalAsync")
+    .WithOpenApi();
+
+app.MapGet("/DemoAsyncLocalAsync", async ([FromServices] ILogger logger, [FromServices] Service service) =>
+    {
+        await service.DemoAsyncLocalAsync();
+    })
+    .WithName("DemoAsyncLocalAsync")
     .WithOpenApi();
 
 app.Run();
